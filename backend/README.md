@@ -1,6 +1,6 @@
 Simple Go backend that broadcasts incoming messages to all connected clients using Websockets. Also, persists the last 1000 messages in Redis and exposes a json API to retrieve it.
 
-Strongly inspired by [https://github.com/gorilla/websocket/tree/master/examples/chat](https://github.com/gorilla/websocket/tree/master/examples/chat)
+Strongly inspired by [Gorilla websocket example](https://github.com/gorilla/websocket/tree/master/examples/chat)
 
 ## Environment Variables
 
