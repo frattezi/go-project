@@ -13,13 +13,27 @@ services:
     environment:
       REACT_APP_BACKEND_WS: ws://localhost:8080
       REACT_APP_BACKEND_URL: http://localhost:8080
+    depends_on:
+      - backend
 
   redis:
     image: redis:4.0.5-alpine
-    command: ["redis-server", "--appendonly", "yes"]
+    command: redis-server --appendonly yes
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
     container_name: redis
     ports:
-      - '6379:6379'
+      - "6379:6379"
+  
+  backend:
+    build: 
+      context: backend
+    environment:
+      - ALLOWED_ORIGIN=http://localhost:3000
+      - REDIS_ADDR=redis:6379
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+ 
