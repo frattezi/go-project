@@ -1,4 +1,3 @@
-
 FROM golang:alpine
 
 ENV ALLOWED_ORIGIN=http://localhost:3000
