@@ -1,0 +1,10 @@
+version: 2.1
+# Getting started from circle-ci page, I don't know how to use it so i'll learn.
+
+orbs:
+    hello: circleci/hello-build@0.0.7 # uses the circleci/buildpack-deps Docker image
+
+workflows:
+    "Hello Workflow":
+        jobs:
+          - hello/hello-build
