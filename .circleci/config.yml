@@ -1,12 +1,12 @@
-version: 2
+version: 2.1
 jobs:
-  build:
+  # Building and shipping app to github
+  # This code generates a static version of the react app and pushes into a master branch(I'm considering this 
+  # a deploy as a githupages or could be another repo with a server listening to it).
+  # Also generates an artifact with the app ready to go.
+  build_app:
     docker:
       - image: circleci/node:10
-
-    branches:
-      only:
-        - devel
 
     working_directory: ~/app
 
@@ -37,10 +37,50 @@ jobs:
 
 
       - store_artifacts:
-          path: ~/app
+          path: ~/app 
           destination: artifact-app
 
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies
+
+  # Building go backend for deploy
+  build_backend:
+    
+    docker:
+      - image: circleci/golang:1.8
+        environment:
+            - ALLOWED_ORIGIN=http://localhost:3000
+            - REDIS_ADDR=redis:6379
+      
+    working_directory: ~/app
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies
+
+      - add_ssh_keys:
+          fingerprints:
+            - "ac:a0:4f:72:12:41:19:9e:2e:8c:c8:9e:cc:b3:33:31"
+      
+      - run: 
+          working_directory: ~/app/backend
+          name: Building go backend
+          command: |
+            go get -d .
+            go build .
+            
+      - store_artifacts:
+          path: ~/app/backend/backend 
+          destination: artifact-backend
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - build_backend
+      - build_app
