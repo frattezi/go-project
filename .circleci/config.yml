@@ -27,14 +27,14 @@ jobs:
             yarn
             yarn build
             mv build ../
-            cd .. && rm -rf $(ls -A | grep -v build | grep -v .git | grep -v .circleci)  # clean up
+            cd .. && rm -rf $(ls -A | grep -v build | grep -v .git)  # clean up
             ls
             mv build/* .
+            rm -rf build
             git checkout master
             git add .
-            git commit -m "Update GHPage"
+            git commit -m "Update GHPage via Circleci"
             git push origin master --force
-
 
       - store_artifacts:
           path: ~/app 
@@ -82,5 +82,13 @@ workflows:
   version: 2
   deploy:
     jobs:
-      - build_backend
-      - build_app
+      - build_backend:
+          filters:
+            branches:
+              only:
+                - devel
+      - build_app:
+          filters:
+            branches:
+              only:
+                - devel    
