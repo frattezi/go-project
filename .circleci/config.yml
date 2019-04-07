@@ -6,7 +6,7 @@ jobs:
 
     branches:
       only:
-        - dev
+        - devel
 
     working_directory: ~/cicd-circleci
 
