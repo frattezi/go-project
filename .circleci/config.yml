@@ -35,6 +35,11 @@ jobs:
             git commit -m "Update GHPage"
             git push origin master --force
 
+
+      - store_artifacts:
+          path: ~/app
+          destination: artifact-app
+
       - save_cache:
           paths:
             - node_modules
