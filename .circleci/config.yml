@@ -8,7 +8,7 @@ jobs:
       only:
         - devel
 
-    working_directory: ~/cicd-circleci
+    working_directory: ~/app
 
     steps:
       - checkout
@@ -20,15 +20,18 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "7b:3d:87:e5:d2:25:b9:a9:e7:98:0f:4f:55:ee:0e:6d"
-
-      - run: yarn
-      - run: yarn build
-      - run: rm -rf $(ls -A | grep -v dist | grep -v .git | grep -v node_modules | grep -v .circleci)  # clean up
-      - run: mv dist/* .
-      - run: git checkout master
-      - run: git add .
-      - run: git commit -m "Update GHPage"
-      - run: git push origin master --force
+      
+      - run: 
+          working_directory: ~/app/frontend
+          command: |
+            yarn
+            yarn build
+            rm -rf $(ls -A | grep -v dist | grep -v .git | grep -v node_modules | grep -v .circleci)  # clean up
+            mv dist/* .
+            git checkout master
+            git add .
+            git commit -m "Update GHPage"
+            git push origin master --force
 
       - save_cache:
           paths:
