@@ -26,8 +26,8 @@ jobs:
           command: |
             yarn
             yarn build
-            mv build node_modules ../
-            cd .. && rm -rf $(ls -A | grep -v build | grep -v .git | grep -v node_modules | grep -v .circleci)  # clean up
+            mv build ../
+            cd .. && rm -rf $(ls -A | grep -v build | grep -v .git | grep -v .circleci)  # clean up
             ls
             mv build/* .
             git checkout master
