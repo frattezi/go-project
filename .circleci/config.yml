@@ -19,15 +19,17 @@ jobs:
 
       - add_ssh_keys:
           fingerprints:
-            - "7b:3d:87:e5:d2:25:b9:a9:e7:98:0f:4f:55:ee:0e:6d"
+            - "ac:a0:4f:72:12:41:19:9e:2e:8c:c8:9e:cc:b3:33:31"
       
       - run: 
           working_directory: ~/app/frontend
           command: |
             yarn
             yarn build
-            rm -rf $(ls -A | grep -v dist | grep -v .git | grep -v node_modules | grep -v .circleci)  # clean up
-            mv dist/* .
+            mv build node_modules ../
+            cd .. && rm -rf $(ls -A | grep -v build | grep -v .git | grep -v node_modules | grep -v .circleci)  # clean up
+            ls
+            mv build/* .
             git checkout master
             git add .
             git commit -m "Update GHPage"
