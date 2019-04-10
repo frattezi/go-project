@@ -92,18 +92,14 @@ jobs:
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           docker push pfrattezi/app-frontend:$TAG
 
-# Deploy frontend image at dockerhub
-  test_frontend_image:
+  test_app:
     docker:
-      - image: circleci/buildpack-deps:stretch
+      - image: circleci/node:10
 
     working_directory: ~/app
 
     steps:
       - checkout
-
-      - setup_remote_docker:
-          docker_layer_caching: true
 
       - restore_cache:
           keys:
@@ -113,14 +109,16 @@ jobs:
           fingerprints:
             - "ac:a0:4f:72:12:41:19:9e:2e:8c:c8:9e:cc:b3:33:31"
 
-      # build and push Docker image
-      - run: |
-          TAG=latest
-          cd ~/app/frontend && docker build -t pfrattezi/tests-app:$TAG -f test.dockerfile . && docker run tests-app:$TAG
-          echo 'Tests passed, deploying latest test image'
-          docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker push pfrattezi/tests-app:$TAG
-          echo 'Deployed to dockerhub'
+      - run:
+          working_directory: ~/app/frontend
+          command: |
+            yarn
+            yarn test
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies
 
 workflows:
   version: 2
@@ -141,7 +139,7 @@ workflows:
             branches:
               only:
                 - master
-      - test_frontend_image:
+      - test_app:
           filters:
             branches:
               only:
