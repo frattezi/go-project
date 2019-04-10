@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  
+  app:
+    build:
+      context: frontend
+      dockerfile: dev.dockerfile
+    container_name: react-app
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_BACKEND_WS: ws://localhost:8080
+      REACT_APP_BACKEND_URL: http://localhost:8080
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:4.0.5-alpine
+    command: redis-server --appendonly yes
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    container_name: redis
+    ports:
+      - "6379:6379"
+  
+  backend:
+    build: 
+      context: backend
+    container_name: app-backend
+    environment:
+      - ALLOWED_ORIGIN=http://localhost:3000
+      - REDIS_ADDR=redis:6379
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+ 

@@ -33,7 +33,7 @@ jobs:
           destination: artifact-backend
             0,
 
-  # Deploy backend image at docker registry
+  # Deploy backend image at dockerhub
   deploy_backend_image:
     docker:
       - image: circleci/buildpack-deps:stretch
@@ -64,7 +64,7 @@ jobs:
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           docker push pfrattezi/app-backend:$TAG
 
-  # Deploy frontend image at docker registry
+  # Deploy frontend image at dockerhub
   deploy_frontend_image:
     docker:
       - image: circleci/buildpack-deps:stretch
@@ -92,6 +92,37 @@ jobs:
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           docker push pfrattezi/app-frontend:$TAG
 
+# Deploy frontend image at dockerhub
+  test_frontend_image:
+    docker:
+      - image: circleci/buildpack-deps:stretch
+
+    working_directory: ~/app
+
+    steps:
+      - checkout
+
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      - restore_cache:
+          keys:
+          - v1-dependencies
+
+      - add_ssh_keys:
+          fingerprints:
+            - "ac:a0:4f:72:12:41:19:9e:2e:8c:c8:9e:cc:b3:33:31"
+
+      # build and push Docker image
+      - run: |
+          TAG=latest
+          cd ~/app/frontend && docker build -t pfrattezi/tests-app:$TAG -f test.dockerfile .
+          cd ~/app/frontend && docker run tests-app:$TAG
+          echo 'Tests passed, deploying latest test image'
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
+          docker push pfrattezi/tests-app:$TAG
+          echo 'Deployed to dockerhub'
+
 workflows:
   version: 2
   deploy:
@@ -111,3 +142,8 @@ workflows:
             branches:
               only:
                 - master
+      - test_frontend_image:
+          filters:
+            branches:
+              only:
+                - devel
