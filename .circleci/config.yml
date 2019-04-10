@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  # Deploy backend binaries as an artifact
+  # Deploy backend binaries as an downloadble artifact
   deploy_backend_artifact:
     docker:
       - image: circleci/golang:1.8
