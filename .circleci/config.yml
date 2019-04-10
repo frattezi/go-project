@@ -124,8 +124,22 @@ jobs:
 
 workflows:
   version: 2
-  deploy:
+  test_and_deploy_app:
     jobs:
+      - deploy_frontend_image:
+          requires:
+            - test_app
+          filters:
+            branches:
+              only:
+                - master
+      - test_app:
+          filters:
+            branches:
+              only:
+                - devel
+                - master
+
       - deploy_backend_artifact:
           filters:
             branches:
@@ -136,13 +150,3 @@ workflows:
             branches:
               only:
                 - master
-      - deploy_frontend_image:
-          filters:
-            branches:
-              only:
-                - master
-      - test_app:
-          filters:
-            branches:
-              only:
-                - devel
