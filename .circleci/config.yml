@@ -31,15 +31,14 @@ jobs:
       - store_artifacts:
           path: ~/app/backend/backend
           destination: artifact-backend
-            0,
 
   # Deploy backend image at dockerhub
   deploy_backend_image:
     docker:
       - image: circleci/buildpack-deps:stretch
         environment:
-            - ALLOWED_ORIGIN=http://localhost:3000
-            - REDIS_ADDR=redis:6379
+              - ALLOWED_ORIGIN=http://localhost:3000
+              - REDIS_ADDR=redis:6379
 
     working_directory: ~/go/src/
 
@@ -95,6 +94,9 @@ jobs:
   test_app:
     docker:
       - image: circleci/node:10
+        environment:
+              - REACT_APP_BACKEND_WS=ws://localhost:8080
+              - REACT_APP_BACKEND_URL=http://localhost:8080
 
     working_directory: ~/app
 
