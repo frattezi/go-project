@@ -1,58 +1,13 @@
 version: 2.1
 jobs:
-  # Building and shipping app to github
-  # This code generates a static version of the react app and pushes into a master branch(I'm considering this 
-  # a deploy as a githupages or could be another repo with a server listening to it).
-  # Also generates an artifact with the app ready to go.
-  deploy_app_static:
-    docker:
-      - image: circleci/node:10
-
-    working_directory: ~/app
-
-    steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-          - v1-dependencies
-
-      - add_ssh_keys:
-          fingerprints:
-            - "ac:a0:4f:72:12:41:19:9e:2e:8c:c8:9e:cc:b3:33:31"
-      
-      - run: 
-          working_directory: ~/app/frontend
-          command: |
-            yarn
-            yarn build
-            mv build ../
-            cd .. && rm -rf $(ls -A | grep -v build | grep -v .git)  # clean up
-            ls
-            mv build/* .
-            rm -rf build
-            git checkout master
-            git add .
-            git commit -m "Update GHPage via Circleci"
-            git push origin master --force
-
-      - store_artifacts:
-          path: ~/app 
-          destination: artifact-app
-
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies
-
-  # Deploy backend bynaries as an artifact 
+  # Deploy backend binaries as an artifact
   deploy_backend_artifact:
     docker:
       - image: circleci/golang:1.8
         environment:
             - ALLOWED_ORIGIN=http://localhost:3000
             - REDIS_ADDR=redis:6379
-      
+
     working_directory: ~/app
 
     steps:
@@ -65,18 +20,18 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "ac:a0:4f:72:12:41:19:9e:2e:8c:c8:9e:cc:b3:33:31"
-      
-      - run: 
+
+      - run:
           working_directory: ~/app/backend
           name: Building go backend
           command: |
             go get -d .
             go build .
-            
+
       - store_artifacts:
-          path: ~/app/backend/backend 
+          path: ~/app/backend/backend
           destination: artifact-backend
-            # Building go backend for deploy
+            0,
 
   # Deploy backend image at docker registry
   deploy_backend_image:
@@ -85,15 +40,15 @@ jobs:
         environment:
             - ALLOWED_ORIGIN=http://localhost:3000
             - REDIS_ADDR=redis:6379
-      
+
     working_directory: ~/go/src/
 
     steps:
       - checkout
 
       - setup_remote_docker:
-          docker_layer_caching: true 
-      
+          docker_layer_caching: true
+
       - restore_cache:
           keys:
           - v1-dependencies
@@ -101,11 +56,11 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "ac:a0:4f:72:12:41:19:9e:2e:8c:c8:9e:cc:b3:33:31"
-      
+
       # build and push Docker image
       - run: |
           TAG=latest
-          cd ~/go/src/backend && docker build -t pfrattezi/app-backend:$TAG .     
+          cd ~/go/src/backend && docker build -t pfrattezi/app-backend:$TAG .
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           docker push pfrattezi/app-backend:$TAG
 
@@ -120,8 +75,8 @@ jobs:
       - checkout
 
       - setup_remote_docker:
-          docker_layer_caching: true 
-      
+          docker_layer_caching: true
+
       - restore_cache:
           keys:
           - v1-dependencies
@@ -129,11 +84,11 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "ac:a0:4f:72:12:41:19:9e:2e:8c:c8:9e:cc:b3:33:31"
-      
+
       # build and push Docker image
       - run: |
           TAG=latest
-          cd ~/app/frontend && docker build -t pfrattezi/app-frontend:$TAG -f prod.dockerfile .     
+          cd ~/app/frontend && docker build -t pfrattezi/app-frontend:$TAG -f prod.dockerfile .
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           docker push pfrattezi/app-frontend:$TAG
 
@@ -141,23 +96,18 @@ workflows:
   version: 2
   deploy:
     jobs:
-      - deploy_app_static:
-          filters:
-            branches:
-              only:
-                - devel    
       - deploy_backend_artifact:
           filters:
             branches:
               only:
-                - devel
+                - master
       - deploy_backend_image:
           filters:
             branches:
               only:
-                - devel
+                - master
       - deploy_frontend_image:
           filters:
             branches:
               only:
-                - devel
+                - master
