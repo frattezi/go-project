@@ -116,8 +116,7 @@ jobs:
       # build and push Docker image
       - run: |
           TAG=latest
-          cd ~/app/frontend && docker build -t pfrattezi/tests-app:$TAG -f test.dockerfile .
-          cd ~/app/frontend && docker run tests-app:$TAG
+          cd ~/app/frontend && docker build -t pfrattezi/tests-app:$TAG -f test.dockerfile . && docker run tests-app:$TAG
           echo 'Tests passed, deploying latest test image'
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           docker push pfrattezi/tests-app:$TAG
