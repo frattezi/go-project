@@ -1,0 +1,8 @@
+{
+    "version": 2,
+    "name": "backend-deployment",
+    "public": true,
+    "builds": [
+      { "src": "backend/*.go", "use": "@now/go" }
+    ]
+}
