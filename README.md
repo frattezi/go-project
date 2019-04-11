@@ -9,7 +9,7 @@ Considering this as a feature branch workflow i have set automated tests for eac
 
 
 
-![CircleCI commits marker](/home/frattezi/github/go-project/images/check-test.png)
+![CircleCI commits marker](./images/check-test.png)
 
 
 
@@ -33,7 +33,7 @@ On master branch each commit will trigger a more complex CI, containing multiple
 
 After the workflow above finishes the circleci dashboard will display the following structure representing the jobs executed:
 
-![master workflow](/home/frattezi/github/go-project/images/test-deploy-app-circle.png)
+![master workflow](./images/test-deploy-app-circle.png)
 
 ---
 
