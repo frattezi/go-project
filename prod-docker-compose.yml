@@ -27,7 +27,7 @@ services:
     image: pfrattezi/app-backend
     container_name: app-backend
     environment:
-      - ALLOWED_ORIGIN=http://tremtec.com:3000
+      - ALLOWED_ORIGIN=http://tremtec.com
       - REDIS_ADDR=redis:6379
     ports:
       - "8080:8080"
