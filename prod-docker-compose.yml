@@ -6,10 +6,10 @@ services:
     image: pfrattezi/app-frontend
     container_name: react-app
     ports:
-      - "3000:3000"
+      - "3000:80"
     environment:
-      REACT_APP_BACKEND_WS: ws://localhost:8080
-      REACT_APP_BACKEND_URL: http://localhost:8080
+      REACT_APP_BACKEND_WS: ws://tremtec.com:8080
+      REACT_APP_BACKEND_URL: http://tremtec.com:8080
     depends_on:
       - backend
 
@@ -27,7 +27,7 @@ services:
     image: pfrattezi/app-backend
     container_name: app-backend
     environment:
-      - ALLOWED_ORIGIN=http://localhost:3000
+      - ALLOWED_ORIGIN=http://tremtec.com:3000
       - REDIS_ADDR=redis:6379
     ports:
       - "8080:8080"
